@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <!-- Navigation -->
+    <h:form>
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.xhtml">Basic Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <c:choose>
+                    <c:when test="${cookie.cRole.value eq 'Owner'}">
+                        <li class="active">
+                            <a>Halo Owner</a>
+                        </li>                        
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Post <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="post_add.xhtml">Tambah Post Baru</a></li>
+                                <li class="divider"></li>
+                                <li><a href="index.xhtml">Daftar Post Terpublikasi</a></li>
+                            </ul>
+                          </li>  
+                        <li>
+                        <h:commandLink type="button" value="Logout" action="#{loginController.startLogout}"></h:commandLink>
+                        </li>
+                    </c:when>
+
+                    <c:when test="${cookie.cRole.value eq 'Editor'}">
+                        <li class="active">
+                            <a>Halo Editor</a>
+                        </li>                        
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Post <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="index.xhtml">Daftar Post Terpublikasi</a></li>
+                                <li><a href="post_draft.xhtml">Daftar Post Draft</a></li>
+                                <li><a href="post_deleted.xhtml">Daftar Post Terhapus</a></li>
+                            </ul>
+                          </li>
+                       
+                        <li>
+                        <h:commandLink type="button" value="Logout" action="#{loginController.startLogout}"></h:commandLink>
+                        </li>
+                    </c:when>
+
+                    <c:when test="${cookie.cRole.value eq 'Admin'}">
+                        <li class="active">
+                            <a>Halo Admin</a>
+                        </li>                        
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Post <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="post_add.xhtml">Tambah Post Baru</a></li>
+                                <li class="divider"></li>
+                                <li><a href="index.xhtml">Daftar Post Terpublikasi</a></li>
+                                <li><a href="post_draft.xhtml">Daftar Post Draft</a></li>
+                                <li><a href="post_deleted.xhtml">Daftar Post Terhapus</a></li>
+                                
+                            </ul>
+                          </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">User <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="user_add.xhtml">Tambah User</a></li>
+                                <li><a href="user_list.xhtml">Daftar User</a></li>
+                                
+                            </ul>
+                          </li>
+                        
+                        <li>
+                        <h:commandLink type="button" value="Logout" action="#{loginController.startLogout}"></h:commandLink>
+                        </li>
+                    </c:when>
+                    <c:otherwise>
+                        <li>
+                            <a>Halo Guest</a>
+                        </li>
+                        <li>
+                        <h:commandLink type="button" value="Login" action="login?faces-redirect=true"></h:commandLink>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Post <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="index.xhtml">Daftar Post Terpublikasi</a></li>
+                            </ul>
+                          </li>
+                              
+                    </c:otherwise>
+                </c:choose>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    </h:form>
+
+</ui:composition>

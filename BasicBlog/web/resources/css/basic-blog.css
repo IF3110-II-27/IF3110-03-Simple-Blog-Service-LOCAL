@@ -1,0 +1,28 @@
+.navbar-custom .nav .dropdown-menu li a {
+color: #404040;
+padding: 20px;
+}
+
+.art-body-inner ul, .art-body-inner ol {
+margin-bottom: 26px;
+}
+.art-list-body {
+position: relative;
+overflow: hidden;
+}
+
+.art-body-inner ul li {
+list-style: disc;
+}
+.art-list-item {
+padding: 40px 0;
+list-style: none;
+overflow: hidden;
+border-bottom: 1px solid #ccc;
+}
+
+.art-list-item-title-and-time {
+float: left;
+width: 30%;
+margin-bottom: 10px;
+}

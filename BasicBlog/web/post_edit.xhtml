@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="templates/template.xhtml"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+     <ui:define name="title">Basic Blog - Edit Post</ui:define>
+    
+    <ui:define name="header">Edit Post</ui:define>
+    
+    <ui:define name="content">
+
+        <c:if test="#{cookie.cRole.value ne 'Admin' and cookie.cRole.value ne 'Editor' and cookie.cRole.value ne 'Owner'}">
+            404 Not Found
+        </c:if>
+        
+        <c:if test="#{cookie.cRole.value eq 'Admin' or cookie.cRole.value eq 'Editor' or cookie.cRole.value eq 'Owner'}">
+        <div class="col-md-10 col-md-offset-1">
+          <div class="edit"></div>
+          <div class="post">
+            #{postController.execute(param['id'])}
+            <h:form role="form" id="addform" onsubmit="return formAddValidation(2);">                       
+              <div class="form-group">
+                <label for="exampleInputEmail1">Judul</label>
+                <h:inputText styleClass="form-control" id="judul" value="#{postController.pos.judul}" />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Tanggal</label>
+                <h:inputText styleClass="form-control" id="tanggal" value="#{postController.pos.tanggal}" />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Konten</label>
+                <h:inputTextarea styleClass="form-control" rows="5" id="konten" value="#{postController.pos.konten}" />
+              </div>
+              <div class="form-group">	
+              </div>
+                <h:commandButton type="submit" styleClass="btn btn-default" value="Edit Post" action="#{postController.edit()}" />
+            </h:form>
+
+          </div>
+        </div>
+
+        </c:if>
+    </ui:define>
+</ui:composition>

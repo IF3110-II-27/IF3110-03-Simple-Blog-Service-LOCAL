@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="templates/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="title">#{postController.read(param['id'])} Basic Blog - #{postController.post.judul}</ui:define>
+    
+    <ui:define name="header">#{postController.post.judul}</ui:define>
+    <ui:define name="subtitle">#{postController.post.printTanggal()}</ui:define>
+    
+    <ui:define name="content">
+        <div class="col-md-10 col-md-offset-1">
+ 
+            
+            
+          <div class="post">
+              
+             <!-- Post Content -->
+            <article>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                            <p>#{postController.post.konten}</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            
+             <p></p>
+             <br />
+            <hr  />           
+            <h:form id="commentform">
+            <c:choose>
+                <c:when test="${cookie.cRole.value eq 'Admin' || cookie.cRole.value eq 'Editor' || cookie.cRole.value eq 'Owner'}">
+                      #{commentController.setPostId(param['id'])}
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Komentar</label>
+                        <h:inputTextarea styleClass="form-control" rows="5" binding="#{komentar}" />
+                      </div>
+                        <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah komentar" action="#{commentController.createByUser(cookie.cId.value, komentar.value)}">
+                            <f:param name="id" value="#{param['id']}" />
+                            <f:ajax execute="@form" render="@form" />
+                        </h:commandButton>
+                </c:when>
+                <c:otherwise>
+                      #{commentController.setPostId(param['id'])}
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Nama</label>
+                        <h:inputText styleClass="form-control" binding="#{nama}" id="name" p:required="required" />
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Email</label>
+                        <h:inputText styleClass="form-control" id="email" binding="#{email}" p:required="required" />
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Komentar</label>
+                        <h:inputTextarea styleClass="form-control" id="contenr" rows="5" binding="#{komentar}" p:required="required" />
+                      </div>
+                    <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah Komentar" onclick="return commentValidation();" action="#{commentController.create(email.value, nama.value, komentar.value)}">
+                            <f:param name="id" value="#{param['id']}" />
+                            <f:ajax execute="@form" render="@form" />
+                    </h:commandButton>
+                </c:otherwise>
+            </c:choose>
+                
+                <ul class="art-list-body" id="comments">
+                <ui:repeat var="thecomments" value="#{commentController.read(param['id'])}">
+                    
+                
+                 <li class="art-list-item">
+                     <div class="art-list-item-title-and-time">
+                         <h2 class="art-list-title"><a href="#">#{thecomments.nama}</a></h2>
+                         <div class="art-list-time">#{thecomments.printTanggal()}</div>
+                     </div>
+                     <p>#{thecomments.komentar}</p>
+                 </li>
+                
+            </ui:repeat>
+                </ul>
+            </h:form>
+            
+          </div>
+        </div>
+    </ui:define>
+</ui:composition>

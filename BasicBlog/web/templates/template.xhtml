@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <h:head>
+        <ui:include src="/templates/head.xhtml"></ui:include>
+        <title><ui:insert name="title">Basic Blog</ui:insert></title>
+    </h:head>
+
+    <h:body class="default">
+            <ui:include src="/templates/navbar.xhtml"></ui:include>
+            
+            <!-- Page Header -->
+            <!-- Set your background image for this header on the line below. -->
+            <header class="intro-header" style="background-image: url('#{resource['img/home-bg.jpg']}')">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                            <div class="site-heading">
+                                <h1> <ui:insert name="header">Basic Blog</ui:insert></h1>
+                                <hr class="small"/>
+                                <span class="subheading"><ui:insert name="subtitle">Tugas 2 IF3110 - Pengembangan Aplikasi Berbasis Web</ui:insert></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <ui:insert name="content">Content</ui:insert>
+            <ui:include src="/templates/footer.xhtml"></ui:include>
+        <ui:include src="/templates/foot.xhtml"></ui:include>
+    </h:body>
+
+</html>

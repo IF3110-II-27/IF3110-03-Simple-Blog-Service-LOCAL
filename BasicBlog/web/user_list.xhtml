@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="templates/template.xhtml"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <ui:define name="title">Basic Blog - Daftar User</ui:define>
+    
+    <ui:define name="header">Daftar User</ui:define>
+
+    <ui:define name="content">
+        <c:if test="#{cookie.cRole.value ne 'Admin'}">
+            404 Not Found
+        </c:if>
+        
+        <c:if test="#{cookie.cRole.value eq 'Admin'}">
+        <div class="col-md-10 col-md-offset-1">
+          <div class="edit"></div>
+          
+          <div class="post">
+              <div class="table-responsive"><h:form>
+                  <h:dataTable styleClass="table table-striped table-condensed" value="#{userController.members}" var="user">
+                    <h:column>    				
+                        <f:facet name="header">Nama</f:facet>    				
+                        <h:outputText value="#{user.name}" />
+                    </h:column>
+                      <h:column>    				
+                        <f:facet name="header">Email</f:facet>
+                        <h:outputText value="#{user.email}" />
+                    </h:column>
+
+                    <h:column>    				
+                        <f:facet name="header">Password</f:facet>    				
+                        <h:outputText value="#{user.password}" />
+                    </h:column>
+                    <h:column>    				
+                        <f:facet name="header">Peran</f:facet>    				
+                        <h:outputText value="#{user.role}" />
+                    </h:column>
+                    <h:column>    				
+                        <f:facet name="header">Aksi</f:facet>    				
+                        <h:commandLink action="user_edit" value="Edit ">
+                            <f:param name="id" value="#{user.id}" />
+                        </h:commandLink>
+                        <h:commandLink action="#{userController.delete(user.id)}" value="Hapus" onclick="return confirm('Apakah Anda yakin akan menghapus user ini?');">
+                        </h:commandLink>
+                    </h:column>
+                  </h:dataTable>
+              </h:form></div>
+          </div>
+        </div>
+        </c:if>
+      </ui:define>
+</ui:composition>
