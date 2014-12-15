@@ -7,12 +7,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.ws.rs.client.ClientBuilder;
+import org.json.JSONObject;
 
 @ManagedBean
 @ViewScoped
@@ -26,43 +27,47 @@ public class PostController {
     private ArrayList<Post> draftPosts;
     private ArrayList<Post> deletedPosts;
     
+    private String debug = "";
+    
+    public String getDebug() {
+        return debug;
+    }
+    
     public PostController(){
         post = new Post();
-        pos = new Post();
-        publishedPosts = new ArrayList<Post>();
-        draftPosts = new ArrayList<Post>();
-        deletedPosts = new ArrayList<Post>();
-        Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            Statement sm = con.createStatement();
-            ResultSet res = sm.executeQuery("SELECT * FROM post ORDER BY Tanggal DESC, id DESC");
-            while(res.next()){
-                Post pos = new Post();
-                pos.setId(res.getInt("id"));
-                pos.setJudul(res.getString("Judul"));
-                pos.setKonten(res.getString("Konten"));
-                pos.setStatus(res.getString("Status"));
-                pos.setTanggal(res.getString("Tanggal"));
-                pos.setDeleted(res.getInt("deleted"));
-                if(pos.getDeleted()==1){
-                    deletedPosts.add(pos);
-                }else if(pos.getStatus().equalsIgnoreCase("unpublished")){
-                    draftPosts.add(pos);
-                }else{
-                    publishedPosts.add(pos);
-                }
+        
+        publishedPosts = new ArrayList<>();
+        draftPosts = new ArrayList<>();
+        deletedPosts = new ArrayList<>();
+        
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("posts.json?orderByChild=\"date\"")
+                .request()
+                .get(String.class);
+
+        JSONObject json = new JSONObject(response);
+        Iterator<String> keys = json.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            debug += key;
+            JSONObject val = json.getJSONObject(key);
+            
+            pos = new Post();
+            pos.setId(key);
+            pos.setJudul(val.getString("title"));
+            pos.setKonten(val.getString("content"));
+            pos.setPublished(val.getBoolean("published"));
+            pos.setTanggal(val.getString("date"));
+            pos.setDeleted(val.getBoolean("deleted"));
+            
+            if(pos.getDeleted()){
+                deletedPosts.add(pos);
+            }else if(pos.getPublished()){
+                publishedPosts.add(pos);
+            }else{
+                draftPosts.add(pos);
             }
-            con.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally{
         }
     }
 
@@ -74,8 +79,8 @@ public class PostController {
     }
     public void read(int id){
         this.id = id;
-        post.setId(id);
-        Connection con = null;
+        //post.setId(id);
+        Connection con;
         String url = "jdbc:mysql://localhost:3306/simpleblog";
         String user = "root";
         String driver = "com.mysql.jdbc.Driver";
@@ -88,7 +93,7 @@ public class PostController {
             while(res.next()){
                 post.setJudul(res.getString("Judul"));
                 post.setKonten(res.getString("Konten"));
-                post.setStatus(res.getString("Status"));
+                //post.setStatus(res.getString("Status"));
                 post.setTanggal(res.getString("Tanggal"));
             }
             con.close();
@@ -101,7 +106,7 @@ public class PostController {
         this.post.setId(post.getId());
         this.post.setJudul(post.getJudul());
         this.post.setKonten(post.getKonten());
-        this.post.setStatus(post.getStatus());
+        //this.post.setStatus(post.getStatus());
         this.post.setTanggal(post.getTanggal());
     }
 
@@ -235,7 +240,7 @@ public class PostController {
         this.pos.setId(pos.getId());
         this.pos.setJudul(pos.getJudul());
         this.pos.setKonten(pos.getKonten());
-        this.pos.setStatus(pos.getStatus());
+        this.pos.setPublished(pos.getPublished());
         this.pos.setTanggal(pos.getTanggal());
     }
     
@@ -253,7 +258,7 @@ public class PostController {
             ps.setString(1, pos.getJudul());
             ps.setString(2, pos.getKonten());            
             ps.setString(3, pos.getTanggal());
-            ps.setInt(4, pos.getId());               
+           // ps.setInt(4, pos.getId());               
             ps.executeUpdate();
             FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
             con.close();
@@ -276,10 +281,10 @@ public class PostController {
             while(res.next()){
                 pos.setJudul(res.getString("Judul"));
                 pos.setKonten(res.getString("Konten"));
-                pos.setStatus(res.getString("Status"));
+                //pos.setStatus(res.getString("Status"));
                 pos.setTanggal(res.getString("Tanggal"));
-                pos.setDeleted(res.getInt("deleted"));
-                pos.setId(id);
+                //pos.setDeleted(res.getInt("deleted"));
+                //pos.setId(id);
                 this.id = id;
             }            
             con.close();
