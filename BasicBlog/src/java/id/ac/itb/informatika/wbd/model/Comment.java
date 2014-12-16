@@ -9,7 +9,7 @@ import javax.faces.bean.RequestScoped;
 public class Comment {
 
     private int id;
-    private int idPost;
+    private String idPost;
     private String nama;
     private String email;
     private String tanggal;
@@ -26,7 +26,7 @@ public class Comment {
         return id;
     }
     
-    public int getIdPost(){
+    public String getIdPost(){
         return idPost;
     }
     
@@ -50,7 +50,7 @@ public class Comment {
         this.id = id;
     }
     
-    public void setIdPost(int idPost){
+    public void setIdPost(String idPost){
         this.idPost = idPost;
     }
     

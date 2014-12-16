@@ -21,13 +21,13 @@ public class CommentController {
     public CommentController(){        
     }
     
-     private int postId;
+    private String postId;
 
-    public int getPostId() {
+    public String getPostId() {
         return postId;
     }
 
-    public void setPostId(int postId) {
+    public void setPostId(String postId) {
         this.postId = postId;
     }
     
@@ -55,7 +55,7 @@ public class CommentController {
             String query = "INSERT INTO comment (id_post, Nama, Email, Tanggal, Komentar) "
                     + "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, postId);
+            //ps.setInt(1, postId);
             ps.setString(2, name);
             ps.setString(3, email);
             DateHelper cd = new DateHelper();
@@ -95,7 +95,7 @@ public class CommentController {
         this.comments = comments;
     }
     
-    public ArrayList<Comment> read(int id){
+    public ArrayList<Comment> read(String id){
         comments = new ArrayList<Comment>();
         Connection con = null;
         String url = "jdbc:mysql://localhost:3306/simpleblog";
@@ -110,7 +110,7 @@ public class CommentController {
             while(res.next()){
                 Comment com = new Comment();
                 com.setId(res.getInt("id"));
-                com.setIdPost(id);
+                //com.setIdPost(id);
                 com.setEmail(res.getString("Email"));
                 com.setNama(res.getString("Nama"));
                 com.setTanggal(res.getString("Tanggal"));

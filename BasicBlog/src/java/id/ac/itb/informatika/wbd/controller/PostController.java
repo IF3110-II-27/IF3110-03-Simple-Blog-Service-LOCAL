@@ -19,7 +19,7 @@ import org.json.JSONObject;
 @ViewScoped
 public class PostController {
     
-    private int id;
+    private String id;
     
     private Post post;
     
@@ -48,9 +48,9 @@ public class PostController {
 
         JSONObject json = new JSONObject(response);
         Iterator<String> keys = json.keys();
+        
         while (keys.hasNext()) {
             String key = keys.next();
-            debug += key;
             JSONObject val = json.getJSONObject(key);
             
             pos = new Post();
@@ -71,51 +71,43 @@ public class PostController {
         }
     }
 
-    public int getId(){
+    public String getId(){
         return id;
     }
     public Post getPost(){
         return post;
     }
-    public void read(int id){
+    public void read(String id){
         this.id = id;
-        //post.setId(id);
-        Connection con;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM post WHERE id="+id);
-            ResultSet res = ps.executeQuery();
-            while(res.next()){
-                post.setJudul(res.getString("Judul"));
-                post.setKonten(res.getString("Konten"));
-                //post.setStatus(res.getString("Status"));
-                post.setTanggal(res.getString("Tanggal"));
-            }
-            con.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
+        post.setId(id);
+        
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("posts/" + id + ".json")
+                .request()
+                .get(String.class);
+        
+        JSONObject json = new JSONObject(response);
+        
+        post.setJudul(json.getString("title"));
+        post.setKonten(json.getString("content"));
+        post.setPublished(json.getBoolean("published"));
+        post.setTanggal(json.getString("date"));
+        post.setDeleted(json.getBoolean("deleted"));
     }
+    
     public void setPost(Post post){
         this.post = new Post();
         this.post.setId(post.getId());
         this.post.setJudul(post.getJudul());
         this.post.setKonten(post.getKonten());
-        //this.post.setStatus(post.getStatus());
+        this.post.setPublished(post.getPublished());
         this.post.setTanggal(post.getTanggal());
+        this.post.setDeleted(post.getDeleted());
     }
 
     public ArrayList<Post> getDeletedPosts() {
         return deletedPosts;
-    }
-
-    public void setDeletedPosts(ArrayList<Post> deletedPosts) {
-        this.deletedPosts = deletedPosts;
     }
     
     public ArrayList<Post> getPublishedPosts(){
@@ -126,14 +118,6 @@ public class PostController {
         return this.draftPosts;
     }
 
-    public void setPublishedPosts(ArrayList<Post> publishedPosts) {
-        this.publishedPosts = publishedPosts;
-    }
-
-    public void setDraftPosts(ArrayList<Post> draftPosts) {
-        this.draftPosts = draftPosts;
-    }
-    
     public Connection getConnection() throws SQLException{
         Connection con = null;
 
@@ -232,9 +216,7 @@ public class PostController {
     public Post getPos(){
         return pos;
     }
-    public void setId(int id){
-        this.id = id;
-    }
+
     public void setPos(Post pos){
         this.pos = new Post();
         this.pos.setId(pos.getId());
@@ -267,7 +249,7 @@ public class PostController {
         }
     }
     
-    public void execute(int id){
+    public void execute(String id){
         Connection con = null;
         String url = "jdbc:mysql://localhost:3306/simpleblog";
         String user = "root";
