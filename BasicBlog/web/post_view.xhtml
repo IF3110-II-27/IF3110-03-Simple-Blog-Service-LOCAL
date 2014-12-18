@@ -56,7 +56,7 @@
                         <label for="exampleInputPassword1">Komentar</label>
                         <h:inputTextarea styleClass="form-control" id="contenr" rows="5" binding="#{komentar}" p:required="required" />
                       </div>
-                    <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah Komentar" onclick="return commentValidation();" action="#{commentController.create(email.value, nama.value, komentar.value)}">
+                    <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah Komentar" onclick="return commentValidation();" action="#{commentController.create(nama.value, email.value, komentar.value)}">
                             <f:param name="id" value="#{param['id']}" />
                             <f:ajax execute="@form" render="@form" />
                     </h:commandButton>
@@ -69,10 +69,10 @@
                 
                  <li class="art-list-item">
                      <div class="art-list-item-title-and-time">
-                         <h2 class="art-list-title"><a href="#">#{thecomments.nama}</a></h2>
+                         <h2 class="art-list-title"><a href="#">#{thecomments.name}</a></h2>
                          <div class="art-list-time">#{thecomments.printTanggal()}</div>
                      </div>
-                     <p>#{thecomments.komentar}</p>
+                     <p>#{thecomments.content}</p>
                  </li>
                 
             </ui:repeat>

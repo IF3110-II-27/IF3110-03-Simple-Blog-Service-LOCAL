@@ -1,16 +1,14 @@
 package id.ac.itb.informatika.wbd.controller;
 
+import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.helper.DateHelper;
 import id.ac.itb.informatika.wbd.model.Comment;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.ws.rs.client.ClientBuilder;
+import org.json.JSONObject;
 
 @ManagedBean
 @ViewScoped
@@ -31,45 +29,19 @@ public class CommentController {
         this.postId = postId;
     }
     
-    public Connection getConnection() throws SQLException{
-        Connection con = null;
-
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally{
-        }
-        return con;
-    }
-    
     public void create(String name, String email, String komentar){
-        try{
-            Connection con = getConnection();
-            String query = "INSERT INTO comment (id_post, Nama, Email, Tanggal, Komentar) "
-                    + "VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(query);
-            //ps.setInt(1, postId);
-            ps.setString(2, name);
-            ps.setString(3, email);
-            DateHelper cd = new DateHelper();
-            ps.setString(4, cd.getCDate());
-            ps.setString(5, komentar);
-            ps.executeUpdate();
-            //FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
-            con.close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
+        Comment newComment = new Comment();
+        newComment.setPostId(postId);
+        newComment.setName(name);
+        newComment.setContent(komentar);
+        newComment.setDate(new DateHelper().getCDate());
+        
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("comments").push().setValue(newComment);
     }
 
     public void createByUser(String id, String komentar){
+        /*
         try {
             Connection con = getConnection();
             Statement sm = con.createStatement();
@@ -85,6 +57,7 @@ public class CommentController {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+                */
     }
 
     public ArrayList<Comment> getComments() {
@@ -96,31 +69,34 @@ public class CommentController {
     }
     
     public ArrayList<Comment> read(String id){
+        Comment comment;
         comments = new ArrayList<Comment>();
-        Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            Statement sm = con.createStatement();
-            ResultSet res = sm.executeQuery("SELECT * FROM comment WHERE id_post="+id+" ORDER BY Tanggal DESC, id DESC");
-            while(res.next()){
-                Comment com = new Comment();
-                com.setId(res.getInt("id"));
-                //com.setIdPost(id);
-                com.setEmail(res.getString("Email"));
-                com.setNama(res.getString("Nama"));
-                com.setTanggal(res.getString("Tanggal"));
-                com.setKomentar(res.getString("Komentar"));
-                comments.add(com);
+        
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("comments.json")
+                .request()
+                .get(String.class);
+
+        JSONObject json = new JSONObject(response);
+        Iterator<String> keys = json.keys();
+
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONObject val = json.getJSONObject(key);
+
+            comment = new Comment();
+            comment.setId(key);
+            comment.setName(val.getString("name"));
+            comment.setContent(val.getString("content"));
+            comment.setDate(val.getString("date"));
+            comment.setPostId(val.getString("postId"));
+            
+            if (id.equals(comment.getPostId())) {
+                comments.add(comment);
             }
-            con.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
         }
+        
         return comments;
     }
 }

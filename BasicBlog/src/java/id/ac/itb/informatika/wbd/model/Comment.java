@@ -1,79 +1,64 @@
 package id.ac.itb.informatika.wbd.model;
 
-import java.sql.Date;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
-@ManagedBean(name = "comment")
-@RequestScoped
 public class Comment {
 
-    private int id;
-    private String idPost;
-    private String nama;
-    private String email;
-    private String tanggal;
-    private String komentar;
+    private String id;
+    private String postId;
+    private String name;
+    private String date;
+    private String content;
     
     public Comment() {
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setDate(String date) {
+        this.date = date;
     }
     
-    public int getId(){
+    public String getId(){
         return id;
     }
     
-    public String getIdPost(){
-        return idPost;
+    public String getName(){
+        return name;
     }
     
-    public String getNama(){
-        return nama;
+    public String getDate(){
+        return date;
     }
     
-    public String getEmail(){
-        return email;
+    public String getContent(){
+        return content;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
     
-    public String getTanggal(){
-        return tanggal;
-    }
-    
-    public String getKomentar(){
-        return komentar;
-    }
-    
-    public void setId(int id){
+    public void setId(String id){
         this.id = id;
     }
     
-    public void setIdPost(String idPost){
-        this.idPost = idPost;
-    }
-    
-    public void setNama(String nama){
-        this.nama = nama;
+    public void setName(String name){
+        this.name = name;
     }
     
     public void getEMail(String email){
-        this.email = email;
+        this.date = email;
     }
     
-    public void setTanggal(String tanggal){
-        this.tanggal = tanggal;
-    }
-    
-    public void setKomentar(String komentar){
-        this.komentar = komentar;
+    public void setContent(String content){
+        this.content = content;
     }
     
     public String printTanggal(){
-        int dd = Integer.parseInt(tanggal.substring(8,10));
+        int dd = Integer.parseInt(date.substring(8,10));
         String s =  dd + " ";
-        int mm = Integer.parseInt(tanggal.substring(5, 7));
+        int mm = Integer.parseInt(date.substring(5, 7));
         String m;
         switch(mm){
             case 1: m="Januari"; break;
@@ -89,7 +74,7 @@ public class Comment {
             case 11: m="November"; break;
             default: m="Desember"; break;
         }
-        s = s + m + " " + (tanggal.substring(0,4));
+        s = s + m + " " + (date.substring(0,4));
         
         return s;
     }

@@ -116,25 +116,6 @@ public class PostController {
     public ArrayList<Post> getDraftPosts(){
         return this.draftPosts;
     }
-
-    public Connection getConnection() throws SQLException{
-        Connection con = null;
-
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection completed.");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally{
-        }
-        return con;
-    }
     
     public void create(String judul, String tanggal, String konten) {
         Post newPost = new Post();
