@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.ws.rs.client.ClientBuilder;
 import org.json.JSONObject;
@@ -26,6 +28,8 @@ public class PostController {
     private ArrayList<Post> deletedPosts;
     private ArrayList<Post> queryPosts;
     
+    private String query;
+    
     public PostController(){
         publishedPosts = new ArrayList<>();
         draftPosts = new ArrayList<>();
@@ -35,14 +39,9 @@ public class PostController {
     }
     
     public void list() {
-        list(null);
-    }
-    
-    public void list(String query) {
         publishedPosts = new ArrayList<>();
         draftPosts = new ArrayList<>();
         deletedPosts = new ArrayList<>();
-        queryPosts = new ArrayList<>();
         
         String response = ClientBuilder.newClient()
                 .target("https://if3110-iii-27.firebaseio.com/")
@@ -70,9 +69,7 @@ public class PostController {
                     deletedPosts.add(post);
                 }else if(post.getPublished().equalsIgnoreCase("true")){
                     publishedPosts.add(post);
-                    if (query != null && post.getContent().contains(query) || post.getTitle().contains(query)) {
-                        queryPosts.add(post);
-                    }
+                            
                 }else{
                     draftPosts.add(post);
                 }
@@ -83,15 +80,34 @@ public class PostController {
     }
     
     public void search(String query) {
-        return "post_query?faces-redirect=true";
+        if (!query.isEmpty()) {
+            list();
+            for (Iterator<Post> iterator = publishedPosts.iterator(); iterator.hasNext();) {
+                Post next = iterator.next();
+                if (next.getContent().contains(query) || next.getTitle().contains(query)) {
+                    queryPosts.add(next);
+                }
+            }
+        }
+    }
+
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public String getId(){
         return id;
     }
+    
     public Post getPost(){
         return post;
     }
+    
     public void read(String id){
         this.id = id;
         post.setId(id);
