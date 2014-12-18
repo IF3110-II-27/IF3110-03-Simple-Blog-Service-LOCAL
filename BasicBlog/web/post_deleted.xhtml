@@ -26,13 +26,13 @@
                     <a href="post.html">
                         <h2 class="post-title">
                             <h:form>
-                           <h:commandLink action="post" value="#{thepost.judul}">
+                           <h:commandLink action="post" value="#{thepost.title}">
                                 <f:param name="id" value="#{thepost.id}" />
                             </h:commandLink>
                             </h:form>
                         </h2>
                         <h3 class="post-subtitle">
-                            #{thepost.konten}
+                            #{thepost.content}
                         </h3>
                     </a>
                     <p class="post-meta">#{thepost.printTanggal()}</p>

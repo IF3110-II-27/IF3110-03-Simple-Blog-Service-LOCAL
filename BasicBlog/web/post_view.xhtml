@@ -7,16 +7,13 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:define name="title">#{postController.read(param['id'])} Basic Blog - #{postController.post.judul}</ui:define>
+    <ui:define name="title">#{postController.read(param['id'])} Basic Blog - #{postController.post.title}</ui:define>
     
-    <ui:define name="header">#{postController.post.judul}</ui:define>
+    <ui:define name="header">#{postController.post.title}</ui:define>
     <ui:define name="subtitle">#{postController.post.printTanggal()}</ui:define>
     
     <ui:define name="content">
         <div class="col-md-10 col-md-offset-1">
- 
-            
-            
           <div class="post">
               
              <!-- Post Content -->
@@ -24,14 +21,13 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                            <p>#{postController.post.konten}</p>
+                            <p>#{postController.post.content}</p>
                         </div>
                     </div>
                 </div>
             </article>
             
-             <p></p>
-             <br />
+            <br />
             <hr  />           
             <h:form id="commentform">
             <c:choose>

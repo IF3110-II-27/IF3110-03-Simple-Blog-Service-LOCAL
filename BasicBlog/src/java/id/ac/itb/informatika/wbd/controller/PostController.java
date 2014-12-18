@@ -1,5 +1,6 @@
 package id.ac.itb.informatika.wbd.controller;
 
+import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.model.Post;
 import java.io.IOException;
 import java.sql.Connection;
@@ -60,10 +61,10 @@ public class PostController {
             
             pos = new Post();
             pos.setId(key);
-            pos.setJudul(val.getString("title"));
-            pos.setKonten(val.getString("content"));
+            pos.setTitle(val.getString("title"));
+            pos.setContent(val.getString("content"));
             pos.setPublished(val.getString("published"));
-            pos.setTanggal(val.getString("date"));
+            pos.setDate(val.getString("date"));
             pos.setDeleted(val.getString("deleted"));
             
             if(pos.getDeleted().equalsIgnoreCase("true")){
@@ -94,18 +95,18 @@ public class PostController {
         
         JSONObject json = new JSONObject(response);
         
-        post.setJudul(json.getString("title"));
-        post.setKonten(json.getString("content"));
-        post.setTanggal(json.getString("date"));
+        post.setTitle(json.getString("title"));
+        post.setContent(json.getString("content"));
+        post.setDate(json.getString("date"));
     }
     
     public void setPost(Post post){
         this.post = new Post();
         this.post.setId(post.getId());
-        this.post.setJudul(post.getJudul());
-        this.post.setKonten(post.getKonten());
+        this.post.setTitle(post.getTitle());
+        this.post.setContent(post.getContent());
         this.post.setPublished(post.getPublished());
-        this.post.setTanggal(post.getTanggal());
+        this.post.setDate(post.getDate());
         this.post.setDeleted(post.getDeleted());
     }
 
@@ -141,18 +142,15 @@ public class PostController {
     }
     
     public void create(String judul, String tanggal, String konten) {
-        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-        formData.add("title", judul);
-        formData.add("date", tanggal);
-        formData.add("content", konten);
-        formData.add("published", "false");
-        formData.add("deleted", "false");
+        Post newPost = new Post();
+        newPost.setTitle(judul);
+        newPost.setDate(tanggal);
+        newPost.setContent(konten);
+        newPost.setPublished("false");
+        newPost.setDeleted("false");
         
-        String response = ClientBuilder.newClient()
-                .target("https://if3110-iii-27.firebaseio.com/")
-                .path("posts.json")
-                .request()
-                .post(Entity.form(formData), String.class);
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("posts").push().setValue(newPost);
         
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
@@ -224,10 +222,10 @@ public class PostController {
     public void setPos(Post pos){
         this.pos = new Post();
         this.pos.setId(pos.getId());
-        this.pos.setJudul(pos.getJudul());
-        this.pos.setKonten(pos.getKonten());
+        this.pos.setTitle(pos.getTitle());
+        this.pos.setContent(pos.getContent());
         this.pos.setPublished(pos.getPublished());
-        this.pos.setTanggal(pos.getTanggal());
+        this.pos.setDate(pos.getDate());
     }
     
     public void edit(){
@@ -241,9 +239,9 @@ public class PostController {
             con = DriverManager.getConnection(url, user, password);
             String query = "UPDATE post SET Judul=?, Konten=?, Tanggal=? WHERE id=?";
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, pos.getJudul());
-            ps.setString(2, pos.getKonten());            
-            ps.setString(3, pos.getTanggal());
+            ps.setString(1, pos.getTitle());
+            ps.setString(2, pos.getContent());            
+            ps.setString(3, pos.getDate());
            // ps.setInt(4, pos.getId());               
             ps.executeUpdate();
             FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
@@ -265,10 +263,10 @@ public class PostController {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM post WHERE id="+id);
             ResultSet res = ps.executeQuery();
             while(res.next()){
-                pos.setJudul(res.getString("Judul"));
-                pos.setKonten(res.getString("Konten"));
+                pos.setTitle(res.getString("Judul"));
+                pos.setContent(res.getString("Konten"));
                 //pos.setStatus(res.getString("Status"));
-                pos.setTanggal(res.getString("Tanggal"));
+                pos.setDate(res.getString("Tanggal"));
                 //pos.setDeleted(res.getInt("deleted"));
                 //pos.setId(id);
                 this.id = id;

@@ -1,16 +1,10 @@
 package id.ac.itb.informatika.wbd.model;
 
-import java.sql.Date;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
-@ManagedBean(name = "post")
-@RequestScoped
 public class Post {
     private String id;
-    private String judul;
-    private String tanggal;
-    private String konten;
+    private String title;
+    private String date;
+    private String content;
     private String published;
     private String deleted;
     
@@ -29,16 +23,16 @@ public class Post {
         return id;
     }
     
-    public String getJudul(){
-        return judul;
+    public String getTitle(){
+        return title;
     }
     
-    public String getTanggal(){
-        return tanggal;
+    public String getDate(){
+        return date;
     }
     
-    public String getKonten(){
-        return konten;
+    public String getContent(){
+        return content;
     }
 
     public String getPublished() {
@@ -53,22 +47,22 @@ public class Post {
         this.id = id;
     }
     
-    public void setJudul(String judul){
-        this.judul = judul;
+    public void setTitle(String title){
+        this.title = title;
     }
     
-    public void setTanggal(String tanggal){
-        this.tanggal = tanggal;
+    public void setDate(String date){
+        this.date = date;
     }
     
-    public void setKonten(String konten){
-        this.konten = konten;
+    public void setContent(String content){
+        this.content = content;
     }
     
     public String printTanggal(){
-        int dd = Integer.parseInt(tanggal.substring(8,10));
+        int dd = Integer.parseInt(date.substring(8,10));
         String s =  dd + " ";
-        int mm = Integer.parseInt(tanggal.substring(5, 7));
+        int mm = Integer.parseInt(date.substring(5, 7));
         String m;
         switch(mm){
             case 1: m="Januari"; break;
@@ -84,7 +78,7 @@ public class Post {
             case 11: m="November"; break;
             default: m="Desember"; break;
         }
-        s = s + m + " " + (tanggal.substring(0,4));
+        s = s + m + " " + (date.substring(0,4));
         
         return s;
     }
