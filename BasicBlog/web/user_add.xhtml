@@ -43,7 +43,7 @@
                             <label><f:selectItem itemValue="Admin" itemLabel="Admin" /></label>
                         </h:selectOneMenu>
                 </div>
-                <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah User" action="#{userController.create(email.value, name.value, password.value, role.value)}"/>
+                <h:commandButton type="submit" styleClass="btn btn-default" value="Tambah User" action="#{userController.create(name.value, email.value, password.value, role.value)}"/>
             </h:form>
 
 

@@ -1,5 +1,6 @@
 package id.ac.itb.informatika.wbd.controller;
 
+import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.model.User;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,7 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -89,82 +94,60 @@ public class UserController {
         return con;
     }
     
-    public void create(String email, String name, String password, String role){
-        try{
-            Connection con = getConnection();
-            String query = "INSERT INTO member (Email, Name, Password, Role) "
-                    + "VALUES (?, ?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, email);            
-            ps.setString(2, name);
-            ps.setString(3, password);
-            ps.setString(4, role);
-            ps.executeUpdate();
+    public void create(String name, String email, String password, String role){
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRole(role);
+        
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("users").push().setValue(newUser);
+        
+        try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("user_list.xhtml");
-            con.close();
-        } catch (IOException | SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public void update(){
-        Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        Map<String, Object> val = new HashMap<>();
+        val.put("name", user.getName());
+        val.put("email", user.getEmail());
+        val.put("password", user.getPassword());
+        val.put("role", user.getRole());
+        fb.child("users").child(user.getId()).updateChildren(val);
+        
         try {
-            Class.forName(driver).newInstance();            
-            con = DriverManager.getConnection(url, user, password);
-            String query = "UPDATE member SET Email=?, Name=?, Password=?, Role=? WHERE id=?";
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, this.user.getEmail());
-            ps.setString(2, this.user.getName());            
-            ps.setString(3, this.user.getPassword());
-            ps.setString(4, this.user.getRole());
-            //ps.setInt(5, this.user.getId());               
-            ps.executeUpdate();
             FacesContext.getCurrentInstance().getExternalContext().redirect("user_list.xhtml");
-            con.close();
-        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void read(int id){
-        Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";        
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM member WHERE id="+id);
-            ResultSet res = ps.executeQuery();
-            while(res.next()){
-                this.user.setEmail(res.getString("Email"));
-                this.user.setName(res.getString("Name"));
-                this.user.setPassword(res.getString("Password"));
-                this.user.setRole(res.getString("Role"));
-                //this.user.setId(id);
-                this.id = id;
-            }            
-            con.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
+    public void read(String id){
+        user.setId(id);
+        
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("users/" + id + ".json")
+                .request()
+                .get(String.class);
+        
+        JSONObject json = new JSONObject(response);
+        
+        user.setName(json.getString("name"));
+        user.setEmail(json.getString("email"));
+        user.setPassword(json.getString("password"));
+        user.setRole(json.getString("role"));
     }
     
-    public String delete(int id){
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement("DELETE FROM member WHERE id=?");
-            ps.setInt(1, id);
-            ps.executeUpdate();
-            con.close();
-        } catch(SQLException e){            
-        }
+    public String delete(String id){
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("users").child(id).removeValue();
+        
         return "user_list?faces-redirect=true";
     }
 }
