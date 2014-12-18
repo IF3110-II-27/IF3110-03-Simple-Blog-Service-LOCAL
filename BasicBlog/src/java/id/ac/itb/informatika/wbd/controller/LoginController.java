@@ -1,11 +1,8 @@
 package id.ac.itb.informatika.wbd.controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import id.ac.itb.informatika.wbd.model.User;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -19,11 +16,7 @@ public class LoginController {
     private String email;
     private String password;
     private String role;
-    private int id;
-    private String dbEmail;
-    private String dbPassword;
-    private String dbRole;
-    private int dbId;
+    private String id;
     
     public LoginController(){
         checkCookie();
@@ -40,25 +33,9 @@ public class LoginController {
     public String getRole(){
         return role;
     }
-    
-    public String getDbRole(){
-        return dbRole;
-    }
-    
-    public int getId(){
+   
+    public String getId(){
         return id;
-    }
-    
-    public String getDbEmail(){
-        return dbEmail;
-    }
-    
-    public String getDbPassword(){
-        return dbPassword;
-    }
-    
-    public int getDbId(){
-        return dbId;
     }
     
     public void setEmail(String email){
@@ -73,67 +50,33 @@ public class LoginController {
         this.role = role;
     }
     
-    public void setDbEmail(String dbEmail){
-        this.dbEmail = dbEmail;
-    }
-    
-    public void setDbPassword(String dbPassword){
-        this.dbPassword = dbPassword;
-    }
-    
-    public void setDbRole(String dbRole){
-        this.dbRole = dbRole;
-    }
-    
-    public void setId(int id){
+    public void setId(String id){
         this.id = id;
     }
     
-    public void setDbId(int dbId){
-        this.dbId = dbId;
-    }
-    
-    public void fetchDb(String email_){
-        if(email_ != null){
-            Connection con = null;
-            String url = "jdbc:mysql://localhost:3306/simpleblog";
-            String user = "root";
-            String password = "";
-            String driver = "com.mysql.jdbc.Driver";
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                Class.forName(driver).newInstance();
-                con = DriverManager.getConnection(url, user, password);
-                Statement sm = con.createStatement();
-                String sql = "SELECT id,Email,Password,Role FROM member WHERE Email = '" + email_ + "'";
-                ps = con.prepareStatement(sql);
-                rs = ps.executeQuery();
-                rs.next();
-                dbEmail = rs.getString("Email");
-                dbPassword = rs.getString("Password");
-                dbRole = rs.getString("Role");
-                dbId = rs.getInt("id");
-                role = rs.getString("Role");
-                id = rs.getInt("id");
-                // close connection
-                con.close();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-                System.out.println(ex.getMessage());
+    public Boolean checkUser(){
+        UserController uc = new UserController();
+        uc.list();
+        ArrayList<User> users = uc.getMembers();
+        
+        for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
+            User user = iterator.next();
+            if (email.equalsIgnoreCase(user.getEmail()) && password.equals(user.getPassword())) {
+                return true;
             }
-            finally{}
         }
+        
+        return false;
     }
     
     public String startLogin(){
-        fetchDb(email);
-        if((email.equals(dbEmail)) && (password.equals(dbPassword))){
+        if(checkUser()){
             FacesContext facesContext = FacesContext.getCurrentInstance();
             
             Cookie cEmail = new Cookie("cEmail", email);
             Cookie cPassword = new Cookie("cPassword", password);
             Cookie cRole = new Cookie("cRole", role);
-            Cookie cId = new Cookie("cId", Integer.toString(id));
+            Cookie cId = new Cookie("cId", id);
             
             cEmail.setMaxAge(86400);
             cPassword.setMaxAge(86400);
@@ -157,12 +100,12 @@ public class LoginController {
         email = "";
         password = "";
         role = "";
-        String id_ = "";
+        id = "";
         
         Cookie cEmail = new Cookie("cEmail", email);
         Cookie cPassword = new Cookie("cPassword", password);
         Cookie cRole = new Cookie("cRole", role);
-        Cookie cId = new Cookie("cId", id_);
+        Cookie cId = new Cookie("cId", id);
         
         cEmail.setMaxAge(0);
         cPassword.setMaxAge(0);

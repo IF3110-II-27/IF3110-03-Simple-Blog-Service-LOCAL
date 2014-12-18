@@ -108,7 +108,6 @@ public class UserController {
             user.setPassword(json.getString("password"));
             user.setRole(json.getString("role"));
         } catch (Exception ex) {
-            user.setName(response);
             Logger.getLogger(CommentController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
