@@ -3,6 +3,7 @@ package id.ac.itb.informatika.wbd.controller;
 import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.helper.DateHelper;
 import id.ac.itb.informatika.wbd.model.Comment;
+import id.ac.itb.informatika.wbd.service.BasicBlogServiceImplService;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -11,11 +12,14 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.ws.rs.client.ClientBuilder;
+import javax.xml.ws.WebServiceRef;
 import org.json.JSONObject;
 
 @ManagedBean
 @ViewScoped
 public class CommentController {
+    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/if3110-iii-27.herokuapp.com/BasicBlog.wsdl")
+    private BasicBlogServiceImplService service;
     
     private ArrayList<Comment> comments;
     
@@ -91,5 +95,19 @@ public class CommentController {
         }
         
         return comments;
+    }
+
+    private Boolean addComment(java.lang.String arg0, java.lang.String arg1, java.lang.String arg2, java.lang.String arg3, java.lang.String arg4) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.addComment(arg0, arg1, arg2, arg3, arg4);
+    }
+
+    private java.util.List<id.ac.itb.informatika.wbd.service.Comment> listComment(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.listComment(arg0);
     }
 }

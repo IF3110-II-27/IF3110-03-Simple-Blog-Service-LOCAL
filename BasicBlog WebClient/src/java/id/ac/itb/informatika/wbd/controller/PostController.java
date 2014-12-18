@@ -2,6 +2,7 @@ package id.ac.itb.informatika.wbd.controller;
 
 import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.model.Post;
+import id.ac.itb.informatika.wbd.service.BasicBlogServiceImplService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,11 +14,14 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.ws.rs.client.ClientBuilder;
+import javax.xml.ws.WebServiceRef;
 import org.json.JSONObject;
 
 @ManagedBean
 @ViewScoped
 public class PostController {
+    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/if3110-iii-27.herokuapp.com/BasicBlog.wsdl")
+    private BasicBlogServiceImplService service;
     
     private String id;
     
@@ -209,4 +213,61 @@ public class PostController {
         
         return "index?faces-redirect=true";
     }
+
+    private java.util.List<id.ac.itb.informatika.wbd.service.Post> listPost() {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.listPost();
+    }
+
+    private Boolean addPost(java.lang.String arg0, java.lang.String arg1, java.lang.String arg2) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.addPost(arg0, arg1, arg2);
+    }
+
+    private Boolean deletePost(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.deletePost(arg0);
+    }
+
+    private Boolean deletePostPermanent(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.deletePostPermanent(arg0);
+    }
+
+    private Boolean editPost(java.lang.String arg0, java.lang.String arg1, java.lang.String arg2, java.lang.String arg3) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.editPost(arg0, arg1, arg2, arg3);
+    }
+
+    private Boolean publishPost(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.publishPost(arg0);
+    }
+
+    private Boolean restorePost(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.restorePost(arg0);
+    }
+
+    private java.util.List<id.ac.itb.informatika.wbd.service.Post> search_1(java.lang.String arg0) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
+        return port.search(arg0);
+    }
+
 }
