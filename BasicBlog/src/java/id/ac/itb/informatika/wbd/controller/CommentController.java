@@ -5,6 +5,8 @@ import id.ac.itb.informatika.wbd.helper.DateHelper;
 import id.ac.itb.informatika.wbd.model.Comment;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.ws.rs.client.ClientBuilder;
@@ -41,23 +43,9 @@ public class CommentController {
     }
 
     public void createByUser(String id, String komentar){
-        /*
-        try {
-            Connection con = getConnection();
-            Statement sm = con.createStatement();
-            ResultSet res = sm.executeQuery("SELECT * FROM member WHERE id="+ Integer.parseInt(id));
-            String email="";
-            String nama="";
-            while(res.next()){
-                email = res.getString("Email");
-                nama = res.getString("Name");
-            }
-            con.close();
-            create(nama, email, komentar);
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-                */
+        UserController user = new UserController();
+        user.read(id);
+        create(user.getUser().getName(), user.getUser().getEmail(), komentar);
     }
 
     public ArrayList<Comment> getComments() {
@@ -68,7 +56,7 @@ public class CommentController {
         this.comments = comments;
     }
     
-    public ArrayList<Comment> read(String id){
+    public ArrayList<Comment> list(String id){
         Comment comment;
         comments = new ArrayList<Comment>();
         
@@ -78,23 +66,27 @@ public class CommentController {
                 .request()
                 .get(String.class);
 
-        JSONObject json = new JSONObject(response);
-        Iterator<String> keys = json.keys();
+        try {
+            JSONObject json = new JSONObject(response);
+            Iterator<String> keys = json.keys();
 
-        while (keys.hasNext()) {
-            String key = keys.next();
-            JSONObject val = json.getJSONObject(key);
+            while (keys.hasNext()) {
+                String key = keys.next();
+                JSONObject val = json.getJSONObject(key);
 
-            comment = new Comment();
-            comment.setId(key);
-            comment.setName(val.getString("name"));
-            comment.setContent(val.getString("content"));
-            comment.setDate(val.getString("date"));
-            comment.setPostId(val.getString("postId"));
-            
-            if (id.equals(comment.getPostId())) {
-                comments.add(comment);
+                comment = new Comment();
+                comment.setId(key);
+                comment.setName(val.getString("name"));
+                comment.setContent(val.getString("content"));
+                comment.setDate(val.getString("date"));
+                comment.setPostId(val.getString("postId"));
+
+                if (id.equals(comment.getPostId())) {
+                    comments.add(comment);
+                }
             }
+        } catch (Exception ex) {
+            Logger.getLogger(CommentController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return comments;

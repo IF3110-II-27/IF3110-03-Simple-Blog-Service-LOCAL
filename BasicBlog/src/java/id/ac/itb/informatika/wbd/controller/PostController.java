@@ -30,13 +30,14 @@ public class PostController {
     private ArrayList<Post> draftPosts;
     private ArrayList<Post> deletedPosts;
     
-    private String debug = "";
-    
-    public String getDebug() {
-        return debug;
+    public PostController(){
+        publishedPosts = new ArrayList<>();
+        draftPosts = new ArrayList<>();
+        deletedPosts = new ArrayList<>();
+        post = new Post();
     }
     
-    public PostController(){
+    public void list() {
         publishedPosts = new ArrayList<>();
         draftPosts = new ArrayList<>();
         deletedPosts = new ArrayList<>();
@@ -47,28 +48,32 @@ public class PostController {
                 .request()
                 .get(String.class);
 
-        JSONObject json = new JSONObject(response);
-        Iterator<String> keys = json.keys();
-        
-        while (keys.hasNext()) {
-            String key = keys.next();
-            JSONObject val = json.getJSONObject(key);
-            
-            post = new Post();
-            post.setId(key);
-            post.setTitle(val.getString("title"));
-            post.setContent(val.getString("content"));
-            post.setPublished(val.getString("published"));
-            post.setDate(val.getString("date"));
-            post.setDeleted(val.getString("deleted"));
-            
-            if(post.getDeleted().equalsIgnoreCase("true")){
-                deletedPosts.add(post);
-            }else if(post.getPublished().equalsIgnoreCase("true")){
-                publishedPosts.add(post);
-            }else{
-                draftPosts.add(post);
+        try {
+            JSONObject json = new JSONObject(response);
+            Iterator<String> keys = json.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                JSONObject val = json.getJSONObject(key);
+
+                post = new Post();
+                post.setId(key);
+                post.setTitle(val.getString("title"));
+                post.setContent(val.getString("content"));
+                post.setPublished(val.getString("published"));
+                post.setDate(val.getString("date"));
+                post.setDeleted(val.getString("deleted"));
+
+                if(post.getDeleted().equalsIgnoreCase("true")){
+                    deletedPosts.add(post);
+                }else if(post.getPublished().equalsIgnoreCase("true")){
+                    publishedPosts.add(post);
+                }else{
+                    draftPosts.add(post);
+                }
             }
+        } catch (Exception ex) {
+            Logger.getLogger(CommentController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

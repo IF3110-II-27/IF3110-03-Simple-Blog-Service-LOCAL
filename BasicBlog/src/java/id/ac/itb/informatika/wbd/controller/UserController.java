@@ -3,12 +3,6 @@ package id.ac.itb.informatika.wbd.controller;
 import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.model.User;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +24,10 @@ public class UserController {
     
     public UserController(){
         user = new User();
+        users = new ArrayList<User>();
+    }
+    
+    public void list() {
         users = new ArrayList<User>();
        
         String response = ClientBuilder.newClient()
@@ -75,41 +73,6 @@ public class UserController {
         this.user.setPassword(user.getPassword());
         this.user.setRole(user.getRole());
     }
-    public Connection getConnection() throws SQLException{
-        Connection con = null;
-
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection completed.");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally{
-        }
-        return con;
-    }
-    
-    public void create(String name, String email, String password, String role){
-        User newUser = new User();
-        newUser.setName(name);
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        newUser.setRole(role);
-        
-        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
-        fb.child("users").push().setValue(newUser);
-        
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("user_list.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     
     public void update(){
         Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
@@ -128,6 +91,7 @@ public class UserController {
     }
     
     public void read(String id){
+        user = new User();
         user.setId(id);
         
         String response = ClientBuilder.newClient()
@@ -136,12 +100,17 @@ public class UserController {
                 .request()
                 .get(String.class);
         
-        JSONObject json = new JSONObject(response);
-        
-        user.setName(json.getString("name"));
-        user.setEmail(json.getString("email"));
-        user.setPassword(json.getString("password"));
-        user.setRole(json.getString("role"));
+        try {
+            JSONObject json = new JSONObject(response);
+
+            user.setName(json.getString("name"));
+            user.setEmail(json.getString("email"));
+            user.setPassword(json.getString("password"));
+            user.setRole(json.getString("role"));
+        } catch (Exception ex) {
+            user.setName(response);
+            Logger.getLogger(CommentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public String delete(String id){
