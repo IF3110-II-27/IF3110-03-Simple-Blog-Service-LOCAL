@@ -62,6 +62,10 @@ public class LoginController {
         for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
             User user = iterator.next();
             if (email.equalsIgnoreCase(user.getEmail()) && password.equals(user.getPassword())) {
+                id = user.getId();
+                email = user.getEmail();
+                password = user.getPassword();
+                role = user.getRole();
                 return true;
             }
         }
