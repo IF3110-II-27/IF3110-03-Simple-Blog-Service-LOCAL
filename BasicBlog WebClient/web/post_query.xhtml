@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="templates/template.xhtml"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+    <ui:define name="title">Basic Blog - Hasil Pencarian ${param['query']}</ui:define>
+    
+    <ui:define name="header">Hasil Pencarian ${param['query']}</ui:define>
+    
+    <ui:define name="content">
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            #{postController.list(param['query'])}
+            <ui:repeat var="thepost" value="#{postController.queryPosts}">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-preview">
+                    <a href="post.html">
+                        <h2 class="post-title">
+                            <h:form>
+                           <h:commandLink action="post_view" value="#{thepost.title}">
+                                <f:param name="id" value="#{thepost.id}" />
+                            </h:commandLink>
+                            </h:form>
+                        </h2>
+                        <h3 class="post-subtitle">
+                            #{thepost.content}
+                        </h3>
+                    </a>
+                    <p class="post-meta">#{thepost.printTanggal()}</p>
+                    
+                    <div class="edit">
+                <c:choose>
+                    <c:when test="${cookie.cRole.value eq 'Editor'}">
+                        <div class="btn-group" role="group" aria-label="...">
+                             <h:form>
+                                <h:commandLink class="btn edit-delete pull-right" action="post_edit" value="Edit">
+                                <f:param name="id" value="#{thepost.id}" />
+                                </h:commandLink>
+                            </h:form>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                              <h:form>
+                                  <h:commandLink  class="btn edit-delete pull-right" action="#{postController.delete(thepost.id,1)}" value="Hapus" onclick="return confirm('Apakah Anda yakin akan menghapus post ini?');">
+                                  </h:commandLink>
+                              </h:form>               
+                        </div>                        
+                    </c:when>
+
+                    <c:when test="${cookie.cRole.value eq 'Admin'}">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <h:form>
+                                <h:commandLink class="btn edit-delete pull-right" action="post_edit" value="Edit">
+                                <f:param name="id" value="#{thepost.id}" />
+                                </h:commandLink>
+                            </h:form>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                              <h:form>
+                                  <h:commandLink  class="btn edit-delete pull-right" action="#{postController.delete(thepost.id,1)}" value="Hapus" onclick="return confirm('Apakah Anda yakin akan menghapus post ini?');">
+                                  </h:commandLink>
+                              </h:form>                 
+                        </div>
+                    </c:when>
+                    
+                    <c:when test="${cookie.cRole.value eq 'Owner'}">
+                        <div class="btn-group" role="group" aria-label="...">
+                             <h:form>
+                                <h:commandLink class="btn edit-delete pull-right" action="post_edit" value="Edit">
+                                <f:param name="id" value="#{thepost.id}" />
+                                </h:commandLink>
+                            </h:form>
+                        </div>
+                    </c:when>
+                    
+                    <c:otherwise></c:otherwise>
+                </c:choose>
+            </div>
+                </div>
+                <hr/>
+            </div>
+            </ui:repeat>
+        </div>
+    </div>
+            
+    </ui:define>
+</ui:composition>

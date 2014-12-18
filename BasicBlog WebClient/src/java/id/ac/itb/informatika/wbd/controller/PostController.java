@@ -24,18 +24,25 @@ public class PostController {
     private ArrayList<Post> publishedPosts;
     private ArrayList<Post> draftPosts;
     private ArrayList<Post> deletedPosts;
+    private ArrayList<Post> queryPosts;
     
     public PostController(){
         publishedPosts = new ArrayList<>();
         draftPosts = new ArrayList<>();
         deletedPosts = new ArrayList<>();
+        queryPosts = new ArrayList<>();
         post = new Post();
     }
     
     public void list() {
+        list(null);
+    }
+    
+    public void list(String query) {
         publishedPosts = new ArrayList<>();
         draftPosts = new ArrayList<>();
         deletedPosts = new ArrayList<>();
+        queryPosts = new ArrayList<>();
         
         String response = ClientBuilder.newClient()
                 .target("https://if3110-iii-27.firebaseio.com/")
@@ -63,6 +70,9 @@ public class PostController {
                     deletedPosts.add(post);
                 }else if(post.getPublished().equalsIgnoreCase("true")){
                     publishedPosts.add(post);
+                    if (query != null && post.getContent().contains(query) || post.getTitle().contains(query)) {
+                        queryPosts.add(post);
+                    }
                 }else{
                     draftPosts.add(post);
                 }
@@ -70,6 +80,10 @@ public class PostController {
         } catch (Exception ex) {
             Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void search(String query) {
+        return "post_query?faces-redirect=true";
     }
 
     public String getId(){
@@ -115,6 +129,10 @@ public class PostController {
     
     public ArrayList<Post> getDraftPosts(){
         return this.draftPosts;
+    }
+
+    public ArrayList<Post> getQueryPosts() {
+        return queryPosts;
     }
     
     public String create(String judul, String tanggal, String konten) {
