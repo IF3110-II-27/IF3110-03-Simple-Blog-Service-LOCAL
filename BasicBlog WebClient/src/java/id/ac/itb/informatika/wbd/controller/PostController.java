@@ -263,7 +263,7 @@ public class PostController {
         return port.restorePost(arg0);
     }
 
-    private java.util.List<id.ac.itb.informatika.wbd.service.Post> search_1(java.lang.String arg0) {
+    private java.util.List<id.ac.itb.informatika.wbd.service.Post> searchPost(java.lang.String arg0) {
         // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
         // If the calling of port operations may lead to race condition some synchronization is required.
         id.ac.itb.informatika.wbd.service.BasicBlogService port = service.getBasicBlogServiceImplPort();
