@@ -57,7 +57,7 @@ public class LoginController {
     public Boolean checkUser(){
         UserController uc = new UserController();
         uc.list();
-        ArrayList<User> users = uc.getMembers();
+        ArrayList<User> users = uc.getUsers();
         
         for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
             User user = iterator.next();

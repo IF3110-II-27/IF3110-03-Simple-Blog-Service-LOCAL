@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.ws.rs.client.ClientBuilder;
 import org.json.JSONObject;
 
@@ -56,15 +55,19 @@ public class UserController {
     public int getId(){
         return id;
     }
+    
     public User getUser(){
         return user;
     }
-    public ArrayList<User> getMembers(){
+    
+    public ArrayList<User> getUsers(){
         return users;
     }
+    
     public void setId(int id){
         this.id = id;
     }
+    
     public void setUser(User user){
         this.user = new User();
         this.user.setId(user.getId());
@@ -74,7 +77,20 @@ public class UserController {
         this.user.setRole(user.getRole());
     }
     
-    public void update(){
+    public String create(String name, String email, String password, String role){
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRole(role);
+        
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("users").push().setValue(newUser);
+        
+        return "user_list?faces-redirect=true";
+    }
+    
+    public String update(){
         Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
         Map<String, Object> val = new HashMap<>();
         val.put("name", user.getName());
@@ -83,11 +99,7 @@ public class UserController {
         val.put("role", user.getRole());
         fb.child("users").child(user.getId()).updateChildren(val);
         
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("user_list.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        return "user_list?faces-redirect=true";
     }
     
     public void read(String id){

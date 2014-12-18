@@ -122,7 +122,7 @@ public class PostController {
         return this.draftPosts;
     }
     
-    public void create(String judul, String tanggal, String konten) {
+    public String create(String judul, String tanggal, String konten) {
         Post newPost = new Post();
         newPost.setTitle(judul);
         newPost.setDate(tanggal);
@@ -133,11 +133,7 @@ public class PostController {
         Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
         fb.child("posts").push().setValue(newPost);
         
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        return "index?faces-redirect=true";
     }
     
     public String delete(String id, int index){
@@ -174,7 +170,7 @@ public class PostController {
         return "post_draft?faces-redirect=true";
     }
     
-    public void update(){
+    public String update(){
         Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
         Map<String, Object> val = new HashMap<>();
         val.put("title", post.getTitle());
@@ -182,10 +178,6 @@ public class PostController {
         val.put("content", post.getContent());
         fb.child("posts").child(id).updateChildren(val);
         
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        return "index?faces-redirect=true";
     }
 }

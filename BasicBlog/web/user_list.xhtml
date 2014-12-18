@@ -6,7 +6,7 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <ui:define name="title">#{userController.list()} Basic Blog - Daftar User</ui:define>
+    <ui:define name="title">Basic Blog - Daftar User</ui:define>
     
     <ui:define name="header">Daftar User</ui:define>
 
@@ -16,12 +16,13 @@
         </c:if>
         
         <c:if test="#{cookie.cRole.value eq 'Admin'}">
+        #{userController.list()}
         <div class="col-md-10 col-md-offset-1">
           <div class="edit"></div>
           
           <div class="post">
               <div class="table-responsive"><h:form>
-                  <h:dataTable styleClass="table table-striped table-condensed" value="#{userController.members}" var="user">
+                  <h:dataTable styleClass="table table-striped table-condensed" value="#{userController.users}" var="user">
                     <h:column>    				
                         <f:facet name="header">Nama</f:facet>    				
                         <h:outputText value="#{user.name}" />

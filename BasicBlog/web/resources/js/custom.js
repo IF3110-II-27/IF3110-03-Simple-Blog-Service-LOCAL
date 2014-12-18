@@ -16,10 +16,12 @@ function userValidation(stat){
     } else if(!emailValidation(document.userform["userform:email"].value)){
         return false;
     }else{
+        /*
         if (stat==1)
             alert("User berhasil ditambahkan");
         else
             alert("User berhasil diedit");
+        */
         return true;
     }
 }
@@ -66,10 +68,12 @@ function formAddValidation(stat){
     } else if(!validasiTanggal(document.addform["addform:tanggal"].value)){
         return false;
     }else{
+        /*
         if (stat==1)
             alert("Post berhasil ditambahkan");
         else
             alert("Post berhasil diedit");
+            */
         return true;
     }
 }
