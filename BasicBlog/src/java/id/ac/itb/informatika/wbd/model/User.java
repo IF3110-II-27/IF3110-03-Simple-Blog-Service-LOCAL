@@ -1,18 +1,13 @@
 package id.ac.itb.informatika.wbd.model;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
-@ManagedBean(name = "member")
-@RequestScoped
 public class User {
-    private int id;
+    private String id;
     private String email;
     private String name;
     private String password;
     private String role;
     
-    public int getId(){
+    public String getId(){
         return id;
     }
     
@@ -32,7 +27,7 @@ public class User {
         return role;
     }
     
-    public void setId(int id){
+    public void setId(String id){
         this.id = id;
     }
     

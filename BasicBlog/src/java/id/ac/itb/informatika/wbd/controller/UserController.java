@@ -9,9 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.ws.rs.client.ClientBuilder;
+import org.json.JSONObject;
 
 @ManagedBean
 @ViewScoped
@@ -23,30 +26,27 @@ public class UserController {
     public UserController(){
         user = new User();
         users = new ArrayList<User>();
-        Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/simpleblog";
-        String user = "root";
-        String driver = "com.mysql.jdbc.Driver";
-        String password = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url, user, password);
-            Statement sm = con.createStatement();
-            ResultSet res = sm.executeQuery("SELECT * FROM member");
-            while(res.next()){
-                User member = new User();
-                member.setId(res.getInt("id"));
-                member.setEmail(res.getString("Email"));
-                member.setName(res.getString("Name"));
-                member.setPassword(res.getString("Password"));
-                member.setRole(res.getString("Role"));
-                users.add(member);
-            }
-            con.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        finally{
+       
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("users.json")
+                .request()
+                .get(String.class);
+
+        JSONObject json = new JSONObject(response);
+        Iterator<String> keys = json.keys();
+
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONObject val = json.getJSONObject(key);
+            user = new User();
+            user.setId(key);
+            user.setEmail(val.getString("email"));
+            user.setName(val.getString("name"));
+            user.setPassword(val.getString("password"));
+            user.setRole(val.getString("role"));
+            
+            users.add(user);
         }
     }
     
@@ -122,7 +122,7 @@ public class UserController {
             ps.setString(2, this.user.getName());            
             ps.setString(3, this.user.getPassword());
             ps.setString(4, this.user.getRole());
-            ps.setInt(5, this.user.getId());               
+            //ps.setInt(5, this.user.getId());               
             ps.executeUpdate();
             FacesContext.getCurrentInstance().getExternalContext().redirect("user_list.xhtml");
             con.close();
@@ -147,7 +147,7 @@ public class UserController {
                 this.user.setName(res.getString("Name"));
                 this.user.setPassword(res.getString("Password"));
                 this.user.setRole(res.getString("Role"));
-                this.user.setId(id);
+                //this.user.setId(id);
                 this.id = id;
             }            
             con.close();
