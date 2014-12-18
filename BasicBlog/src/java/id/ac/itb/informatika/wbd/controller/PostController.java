@@ -9,10 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import org.json.JSONObject;
 
 @ManagedBean
@@ -57,13 +62,13 @@ public class PostController {
             pos.setId(key);
             pos.setJudul(val.getString("title"));
             pos.setKonten(val.getString("content"));
-            pos.setPublished(val.getBoolean("published"));
+            pos.setPublished(val.getString("published"));
             pos.setTanggal(val.getString("date"));
-            pos.setDeleted(val.getBoolean("deleted"));
+            pos.setDeleted(val.getString("deleted"));
             
-            if(pos.getDeleted()){
+            if(pos.getDeleted().equalsIgnoreCase("true")){
                 deletedPosts.add(pos);
-            }else if(pos.getPublished()){
+            }else if(pos.getPublished().equalsIgnoreCase("true")){
                 publishedPosts.add(pos);
             }else{
                 draftPosts.add(pos);
@@ -91,9 +96,7 @@ public class PostController {
         
         post.setJudul(json.getString("title"));
         post.setKonten(json.getString("content"));
-        post.setPublished(json.getBoolean("published"));
         post.setTanggal(json.getString("date"));
-        post.setDeleted(json.getBoolean("deleted"));
     }
     
     public void setPost(Post post){
@@ -137,23 +140,24 @@ public class PostController {
         return con;
     }
     
-    public void create(String judul, String tanggal, String konten){
-        try{
-            Connection con = getConnection();
-            String query = "INSERT INTO post (id_member, Status,Judul,Konten,Tanggal, deleted) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setInt(1, 1);            
-            ps.setString(2, "unpublished");
-            ps.setString(3, judul);
-            ps.setString(4, konten);
-            ps.setString(5, tanggal);  
-            ps.setInt(6, 0);
-            ps.executeUpdate();
+    public void create(String judul, String tanggal, String konten) {
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        formData.add("title", judul);
+        formData.add("date", tanggal);
+        formData.add("content", konten);
+        formData.add("published", "false");
+        formData.add("deleted", "false");
+        
+        String response = ClientBuilder.newClient()
+                .target("https://if3110-iii-27.firebaseio.com/")
+                .path("posts.json")
+                .request()
+                .post(Entity.form(formData), String.class);
+        
+        try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
-            con.close();
-        } catch (IOException | SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

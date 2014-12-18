@@ -8,20 +8,20 @@ import javax.faces.bean.RequestScoped;
 @RequestScoped
 public class Post {
     private String id;
-    private Boolean published;
     private String judul;
     private String tanggal;
     private String konten;
-    private Boolean deleted;
+    private String published;
+    private String deleted;
     
     public Post() {
     }
 
-    public Boolean getDeleted() {
+    public String getDeleted() {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(String deleted) {
         this.deleted = deleted;
     }
     
@@ -41,11 +41,11 @@ public class Post {
         return konten;
     }
 
-    public Boolean getPublished() {
+    public String getPublished() {
         return published;
     }
 
-    public void setPublished(Boolean published) {
+    public void setPublished(String published) {
         this.published = published;
     }
     
