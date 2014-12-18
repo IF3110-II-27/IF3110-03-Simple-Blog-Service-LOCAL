@@ -2,10 +2,6 @@ package id.ac.itb.informatika.wbd.controller;
 
 import com.firebase.client.Firebase;
 import id.ac.itb.informatika.wbd.model.Post;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.ws.rs.client.ClientBuilder;
 import org.json.JSONObject;
 
@@ -73,7 +68,7 @@ public class PostController {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(CommentController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
