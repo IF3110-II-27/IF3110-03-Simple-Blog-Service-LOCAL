@@ -9,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
@@ -159,57 +161,37 @@ public class PostController {
         }
     }
     
-    public String delete(int id, int index){
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE post SET deleted=? WHERE id=?");
-            ps.setInt(1, 1);
-            ps.setInt(2, id);
-            ps.executeUpdate();
-            con.close();
-        } catch(SQLException e){            
-        }
-        if(index == 1)
-            return "index?faces-redirect=true";
-        else
-            return "post_draft?faces-redirect=true";
+    public String delete(String id, int index){
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        Map<String, Object> val = new HashMap<String, Object>();
+        val.put("deleted", "true");
+        fb.child("posts").child(id).updateChildren(val);
+        
+        return index == 1 ? "index?faces-redirect=true" : "post_draft?faces-redirect=true";
     }
     
-    public String restore(int id){
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE post SET deleted=? WHERE id=?");
-            ps.setInt(1, 0);
-            ps.setInt(2, id);
-            ps.executeUpdate();
-            con.close();
-        } catch(SQLException e){            
-        }
+    public String restore(String id){
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        Map<String, Object> val = new HashMap<String, Object>();
+        val.put("deleted", "false");
+        fb.child("posts").child(id).updateChildren(val);
+        
         return "post_deleted?faces-redirect=true";
     }
     
-    public String deletePermanent(int id){
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement("DELETE FROM post WHERE id=?");
-            ps.setInt(1, id);
-            ps.executeUpdate();
-            con.close();
-        } catch(SQLException e){            
-        }
+    public String deletePermanent(String id){
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        fb.child("posts").child(id).removeValue();
+        
         return "post_deleted?faces-redirect=true";
     }
     
-    public String publish(int id){
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE post SET status=? WHERE id=?");
-            ps.setString(1, "published");
-            ps.setInt(2, id);
-            ps.executeUpdate();
-            con.close();
-        } catch(SQLException e){            
-        }
+    public String publish(String id){
+        Firebase fb = new Firebase("https://if3110-iii-27.firebaseio.com/");
+        Map<String, Object> val = new HashMap<String, Object>();
+        val.put("published", "true");
+        fb.child("posts").child(id).updateChildren(val);
+        
         return "post_draft?faces-redirect=true";
     }
     
